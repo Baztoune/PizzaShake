@@ -36,4 +36,4 @@ proguard/
 .idea/
 
 #gradle folder
-.gradle/
+.gradle
