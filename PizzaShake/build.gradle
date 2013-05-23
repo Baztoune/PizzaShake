@@ -13,7 +13,6 @@ repositories {
 }
 
 dependencies {
-    compile 'com.squareup:seismic:1.0.0'
     compile files('libs/android-support-v4.jar')
 }
 
