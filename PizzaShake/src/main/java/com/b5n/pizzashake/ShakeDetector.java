@@ -21,7 +21,7 @@ public class ShakeDetector implements SensorEventListener {
      * When the magnitude of total acceleration exceeds this
      * value, the phone is accelerating.
      */
-    private static final int ACCELERATION_THRESHOLD = 13;
+    private static final int ACCELERATION_THRESHOLD = 10;
 
     /** Listens for shakes. */
     public interface Listener {
@@ -98,7 +98,7 @@ public class ShakeDetector implements SensorEventListener {
     static class SampleQueue {
 
         /** Window size in ns. Used to compute the average. */
-        private static final long MAX_WINDOW_SIZE = 500000000; // 0.5s
+        private static final long MAX_WINDOW_SIZE = 250000000; // 0.5s
         private static final long MIN_WINDOW_SIZE = MAX_WINDOW_SIZE >> 1; // 0.25s
 
         /**

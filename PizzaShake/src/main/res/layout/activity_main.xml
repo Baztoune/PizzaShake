@@ -6,6 +6,7 @@
     <ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/imageView2" android:src="@drawable/pizzahut" android:layout_gravity="top"
-            android:contentDescription="@string/image_description" android:cropToPadding="false"/>
+            android:id="@+id/imageView2" android:src="@drawable/pizzahut"
+            android:contentDescription="@string/image_description" android:cropToPadding="false"
+            android:scaleType="centerCrop"/>
 </LinearLayout>

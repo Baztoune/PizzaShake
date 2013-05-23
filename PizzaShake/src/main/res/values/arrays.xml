@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pizza">
+        <item>@drawable/pizzahut</item>
+        <item>@drawable/pizza_au_pesto_saumon_fume</item>
+        <item>@drawable/pizza_blanche_a_la_roquette</item>
+        <item>@drawable/pizza_cremeuse_au_maroilles</item>
+        <item>@drawable/pizza_light_au_saumon</item>
+        <item>@drawable/pizza_regina</item>
+    </array>
+</resources>
