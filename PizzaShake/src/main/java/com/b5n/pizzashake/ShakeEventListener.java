@@ -19,7 +19,7 @@ public class ShakeEventListener implements SensorEventListener {
      * Minimum times in a shake gesture that the direction of movement needs to
      * change.
      */
-    private static final int MIN_DIRECTION_CHANGE = 3;
+    private static final int MIN_DIRECTION_CHANGE = 2;
 
     /** Maximum pause between movements. */
     private static final int MAX_PAUSE_BETHWEEN_DIRECTION_CHANGE = 200;
@@ -66,9 +66,9 @@ public class ShakeEventListener implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent se) {
         // get sensor data
-        float x = se.values[SensorManager.DATA_X];
-        float y = se.values[SensorManager.DATA_Y];
-        float z = se.values[SensorManager.DATA_Z];
+        float x = se.values[0];
+        float y = se.values[1];
+        float z = se.values[2];
 
         // calculate movement
         float totalMovement = Math.abs(x + y + z - lastX - lastY - lastZ);
