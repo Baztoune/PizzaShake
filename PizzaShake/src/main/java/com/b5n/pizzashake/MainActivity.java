@@ -22,14 +22,22 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 public class MainActivity extends Activity implements SensorEventListener {
     private SensorManager manager;
     private Sensor accel;
-
+    static final float ALPHA = 0.15f;
+    private float[] accelVals;
+    private float mAccel; // acceleration apart from gravity
+    private float mAccelCurrent; // current acceleration including gravity
+    private float mAccelLast; // last acceleration including gravity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         manager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        accel = manager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        accel = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        mAccel = 0.00f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
 
         showRandomImage();
     }
@@ -37,7 +45,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     protected void onResume() {
         super.onResume();
-        manager.registerListener(this, accel, SensorManager.SENSOR_DELAY_GAME);
+        manager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -50,12 +58,40 @@ public class MainActivity extends Activity implements SensorEventListener {
         // not going to do anything with this.
     }
     public void onSensorChanged(SensorEvent event) {
-        float xValue = event.values[0];
-        float yValue = event.values[1];
-        float zValue = event.values[2];
-        if (xValue + yValue + zValue > 3 ) {
-            showRandomImage();
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            accelVals = lowPass( event.values.clone(), accelVals );
+
+            float x =accelVals[0];
+            float y = accelVals[1];
+            float z = accelVals[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = (float) Math.sqrt((double) (x*x + y*y + z*z));
+            float delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta; // perform low-cut filter
+
+            TextView tv1= (TextView)findViewById(R.id.textView);
+            TextView tv2= (TextView)findViewById(R.id.textView2);
+            TextView tv3= (TextView)findViewById(R.id.textView3);
+            TextView tv4= (TextView)findViewById(R.id.textView4);
+
+            tv1.setText("x="+accelVals[0]);
+            tv2.setText("y="+accelVals[1]);
+            tv3.setText("z="+accelVals[2]);
+            tv4.setText("a="+mAccel);
         }
+    }
+
+    /**
+     * @see http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation
+     * @see http://developer.android.com/reference/android/hardware/SensorEvent.html#values
+     */
+    protected float[] lowPass( float[] input, float[] output ) {
+        if ( output == null ) return input;
+
+        for ( int i=0; i<input.length; i++ ) {
+            output[i] = output[i] + ALPHA * (input[i] - output[i]);
+        }
+        return output;
     }
 
     private void showRandomImage() {
