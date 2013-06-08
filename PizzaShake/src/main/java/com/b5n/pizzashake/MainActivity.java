@@ -24,11 +24,6 @@ public class MainActivity extends Activity {
     private SensorManager mSensorManager;
     private ShakeEventListener mSensorListener;
 
-    static final float ALPHA = 0.15f;
-    private float[] accelVals;
-    private float mAccel; // acceleration apart from gravity
-    private float mAccelCurrent; // current acceleration including gravity
-    private float mAccelLast; // last acceleration including gravity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +31,15 @@ public class MainActivity extends Activity {
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorListener = new ShakeEventListener();
-
         mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
-
             public void onShake() {
                 Toast.makeText(MainActivity.this, "Shake!", Toast.LENGTH_SHORT).show();
+                showRandomImage();
             }
         });
+        mSensorManager.registerListener(mSensorListener,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_UI);
 
         showRandomImage();
     }

@@ -13,7 +13,7 @@ public class ShakeEventListener implements SensorEventListener {
 
 
     /** Minimum movement force to consider. */
-    private static final int MIN_FORCE = 10;
+    private static final int MIN_FORCE = 8;
 
     /**
      * Minimum times in a shake gesture that the direction of movement needs to
@@ -44,6 +44,7 @@ public class ShakeEventListener implements SensorEventListener {
 
     /** The last z position. */
     private float lastZ = 0;
+
 
     /** OnShakeListener that is called when shake is detected. */
     private OnShakeListener mShakeListener;
@@ -124,6 +125,27 @@ public class ShakeEventListener implements SensorEventListener {
         lastX = 0;
         lastY = 0;
         lastZ = 0;
+    }
+
+
+    /*
+     * time smoothing constant for low-pass filter
+     * 0 ≤ alpha ≤ 1 ; a smaller value basically means more smoothing
+     * See: http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization
+     */
+    static final float ALPHA = 0.15f;
+
+    /**
+     * @see http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation
+     * @see http://developer.android.com/reference/android/hardware/SensorEvent.html#values
+     */
+    protected float[] lowPass( float[] input, float[] output ) {
+        if ( output == null ) return input;
+
+        for ( int i=0; i<input.length; i++ ) {
+            output[i] = output[i] + ALPHA * (input[i] - output[i]);
+        }
+        return output;
     }
 
     @Override
