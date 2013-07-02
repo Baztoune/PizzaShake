@@ -81,12 +81,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        ProgressBar mProgress = (ProgressBar) findViewById(R.id.progressBar);
         ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
-        if(mProgress.getProgress()>=100){
-            mProgress.setProgress(0);
-        }
-        mProgress.incrementProgressBy(10);
         pw.incrementProgress();
         return false;
     }
