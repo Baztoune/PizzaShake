@@ -10,17 +10,22 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 import static android.view.Gravity.CENTER;
 import static android.view.ViewGroup.LayoutParams;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnTouchListener {
     private SensorManager mSensorManager;
     private ShakeEventListener mSensorListener;
 
@@ -40,6 +45,9 @@ public class MainActivity extends Activity {
         mSensorManager.registerListener(mSensorListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_UI);
+
+        View view = findViewById(R.id.mainView);
+        view.setOnTouchListener(this);
 
         showRandomImage();
     }
@@ -69,5 +77,17 @@ public class MainActivity extends Activity {
         Drawable drawable = pizzas.getDrawable(r.nextInt(pizzas.length()));
 
         image.setImageDrawable(drawable);
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        ProgressBar mProgress = (ProgressBar) findViewById(R.id.progressBar);
+        ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
+        if(mProgress.getProgress()>=100){
+            mProgress.setProgress(0);
+        }
+        mProgress.incrementProgressBy(10);
+        pw.incrementProgress();
+        return false;
     }
 }
