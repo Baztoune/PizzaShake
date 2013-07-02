@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -82,7 +85,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
+        pw.setVisibility(View.VISIBLE);
         pw.incrementProgress();
+
         return false;
     }
 }

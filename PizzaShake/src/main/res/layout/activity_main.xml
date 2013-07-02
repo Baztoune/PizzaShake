@@ -10,14 +10,17 @@
 
     <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:clickable="false">
 
         <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/imageView2" android:src="@drawable/pizzahut"
                 android:contentDescription="@string/image_description" android:cropToPadding="false"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="false"/>
 
         <com.b5n.pizzashake.ProgressWheel
                 android:id="@+id/pw_spinner"
@@ -31,7 +34,7 @@
                 ProgressWheel:barColor="#0097D6"
                 ProgressWheel:barWidth="5dp"
                 ProgressWheel:rimWidth="2dp"
-                android:visibility="visible"
+                android:visibility="invisible"
                 android:layout_centerInParent="true"/>
     </RelativeLayout>
 
