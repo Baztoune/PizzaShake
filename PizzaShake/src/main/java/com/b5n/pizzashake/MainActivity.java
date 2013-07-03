@@ -11,6 +11,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -28,9 +29,10 @@ import static android.view.Gravity.CENTER;
 import static android.view.ViewGroup.LayoutParams;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-public class MainActivity extends Activity implements View.OnTouchListener {
+public class MainActivity extends Activity implements View.OnTouchListener{
     private SensorManager mSensorManager;
     private ShakeEventListener mSensorListener;
+    private boolean isViewfaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +86,36 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        AlphaAnimation fadeOut = new AlphaAnimation(1f,0.2f);
+        fadeOut.setDuration(800);
+        fadeOut.setFillAfter(true);
+        AlphaAnimation fadeIn = new AlphaAnimation(0.2f,1f);
+        fadeIn.setDuration(800);
+        fadeIn.setFillAfter(true);
+
         ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
         pw.setVisibility(View.VISIBLE);
-        pw.incrementProgress();
+        for(int i = 0;i<10;i++){
+            pw.incrementProgress();
+        }
 
-        return false;
+        ImageView image = (ImageView) findViewById(R.id.imageView2);
+
+        if(!isViewfaded){
+            image.startAnimation(fadeOut);
+            isViewfaded = true;
+        }
+
+        if(pw.progress > 360){
+            pw.setProgress(0);
+            pw.setVisibility(View.INVISIBLE);
+
+            image.startAnimation(fadeIn);
+            showRandomImage();
+            isViewfaded = true;
+        }
+
+        return true;
     }
+
 }
