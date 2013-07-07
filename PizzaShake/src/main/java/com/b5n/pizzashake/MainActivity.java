@@ -2,6 +2,7 @@ package com.b5n.pizzashake;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.Random;
 import java.util.Timer;
@@ -159,4 +161,9 @@ public class MainActivity extends Activity implements View.OnTouchListener{
             }
         }
     };
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 }
