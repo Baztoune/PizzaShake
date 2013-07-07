@@ -36,6 +36,7 @@ public class MainActivity extends Activity implements View.OnTouchListener{
     private ShakeEventListener mSensorListener;
     private boolean isViewfaded = false;
     private Timer myTimer;
+    private static final String TAG = "com.b5n.pizzashake";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,11 +144,9 @@ public class MainActivity extends Activity implements View.OnTouchListener{
 
     private Runnable Timer_Tick = new Runnable() {
         public void run() {
-
             //This method runs in the same thread as the UI.
-
             //Do something to the UI thread here
-
+            Log.d(TAG,"tick");
         }
     };
 }
