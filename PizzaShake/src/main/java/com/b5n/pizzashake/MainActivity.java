@@ -47,8 +47,7 @@ public class MainActivity extends Activity implements View.OnTouchListener{
         mSensorListener = new ShakeEventListener();
         mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
             public void onShake() {
-                Toast.makeText(MainActivity.this, "Shake!", Toast.LENGTH_SHORT).show();
-                showRandomImage();
+                updateProgressWheel(10);
             }
         });
         mSensorManager.registerListener(mSensorListener,
@@ -97,8 +96,8 @@ public class MainActivity extends Activity implements View.OnTouchListener{
         image.setImageDrawable(drawable);
     }
 
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
+    private void updateProgressWheel(int percentToAdd){
+        /*Animation properties*/
         AlphaAnimation fadeOut = new AlphaAnimation(1f,0.2f);
         fadeOut.setDuration(800);
         fadeOut.setFillAfter(true);
@@ -106,19 +105,11 @@ public class MainActivity extends Activity implements View.OnTouchListener{
         fadeIn.setDuration(800);
         fadeIn.setFillAfter(true);
 
+        /*Get components*/
         ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
-        pw.setVisibility(View.VISIBLE);
-        for(int i = 0;i<10;i++){
-            pw.incrementProgress();
-        }
-
         ImageView image = (ImageView) findViewById(R.id.imageView2);
 
-        if(!isViewfaded){
-            image.startAnimation(fadeOut);
-            isViewfaded = true;
-        }
-
+        pw.setProgress(pw.progress + Double.valueOf(3.6*percentToAdd).intValue());
         if(pw.progress > 360){
             pw.setProgress(0);
             pw.setVisibility(View.INVISIBLE);
@@ -126,7 +117,22 @@ public class MainActivity extends Activity implements View.OnTouchListener{
             image.startAnimation(fadeIn);
             showRandomImage();
             isViewfaded = true;
+        }else {
+            pw.setVisibility(View.VISIBLE);
         }
+
+
+        if(!isViewfaded){
+            image.startAnimation(fadeOut);
+            isViewfaded = true;
+        }
+
+
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        updateProgressWheel(1);
 
         return true;
     }
