@@ -15,29 +15,8 @@ import java.util.Arrays;
  */
 public class ShakeEventListener implements SensorEventListener {
 
-
-    /**
-     * Minimum movement force to consider.
-     */
-    private static final int MIN_FORCE = 8;
-
-    /**
-     * The last x position.
-     */
-    private float lastX = 0;
-
-    /**
-     * The last y position.
-     */
-    private float lastY = 0;
-
-    /**
-     * The last z position.
-     */
-    private float lastZ = 0;
-
+    private static final int MIN_FORCE = 4;
     float[] values = {0, 0, 0};
-
 
     /**
      * OnShakeListener that is called when shake is detected.
@@ -48,10 +27,7 @@ public class ShakeEventListener implements SensorEventListener {
      * Interface for shake gesture.
      */
     public interface OnShakeListener {
-
-        /**
-         * Called when shake gesture is detected.
-         */
+        // Called when shake gesture is detected.
         void onShake();
     }
 
@@ -62,10 +38,7 @@ public class ShakeEventListener implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent se) {
         // get sensor data
-        Log.d(this.getClass().getCanonicalName(), "last  : " + Arrays.toString(values));
-        Log.d(this.getClass().getCanonicalName(), "event : " + Arrays.toString(se.values));
         values = lowPass(se.values.clone(), values);
-        Log.d(this.getClass().getCanonicalName(), "new   : " + Arrays.toString(values));
 
         float x = values[0];
         float y = values[1];
@@ -75,35 +48,18 @@ public class ShakeEventListener implements SensorEventListener {
         magnitude = Math.abs(magnitude - SensorManager.GRAVITY_EARTH);
         Log.d(this.getClass().getCanonicalName(), "magnitude = " + magnitude);
 
-        // calculate movement
-        float totalMovement = Math.abs(x + y + z - lastX - lastY - lastZ);
-        Log.d(this.getClass().getCanonicalName(), "movement = " + totalMovement);
-
-        if (magnitude > 4) {
+        if (magnitude > MIN_FORCE) {
             Log.d(this.getClass().getCanonicalName(), "MOVING");
             mShakeListener.onShake();
-        } else {
-            Log.d(this.getClass().getCanonicalName(), "NOT MOVING");
-            resetShakeParameters();
         }
     }
-
-    /**
-     * Resets the shake parameters to their default values.
-     */
-    private void resetShakeParameters() {
-        lastX = 0;
-        lastY = 0;
-        lastZ = 0;
-    }
-
 
     /*
      * time smoothing constant for low-pass filter
      * 0 ≤ alpha ≤ 1 ; a smaller value basically means more smoothing
      * See: http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization
      */
-    static final float ALPHA = 0.75f;
+    static final float ALPHA = 0.5f;
 
     /**
      * @see http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation

@@ -6,37 +6,30 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Logger;
-
-import static android.view.Gravity.CENTER;
-import static android.view.ViewGroup.LayoutParams;
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class MainActivity extends Activity implements View.OnTouchListener{
+    private static final String TAG = "com.b5n.pizzashake";
+
     private SensorManager mSensorManager;
     private ShakeEventListener mSensorListener;
-    private boolean isViewfaded = false;
+
     private Timer myTimer;
-    private static final String TAG = "com.b5n.pizzashake";
+    private boolean isProgressWheelVisible = false;
+    private long latestPizzaChange = 0;
+    private long latestProgressWheelUpdate = 0;
+    private static long TIME_AFTER_PIZZA_CHANGE = 800;
+    private static long TIME_BEFORE_PROGRESSWHEEL_RESET = 1500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +56,6 @@ public class MainActivity extends Activity implements View.OnTouchListener{
             public void run() {
                 TimerMethod();
             }
-
         }, 0, 1000);
 
         showRandomImage(); // first
@@ -83,8 +75,6 @@ public class MainActivity extends Activity implements View.OnTouchListener{
         super.onStop();
     }
 
-
-
     private void showRandomImage() {
         ImageView image = (ImageView) findViewById(R.id.imageView2);
 
@@ -92,67 +82,81 @@ public class MainActivity extends Activity implements View.OnTouchListener{
         TypedArray pizzas = res.obtainTypedArray(R.array.pizza);
         Random r = new Random();
         Drawable drawable = pizzas.getDrawable(r.nextInt(pizzas.length()));
-
         image.setImageDrawable(drawable);
+
+        latestPizzaChange = System.currentTimeMillis();
     }
 
     private void updateProgressWheel(int percentToAdd){
-        /*Animation properties*/
-        AlphaAnimation fadeOut = new AlphaAnimation(1f,0.2f);
-        fadeOut.setDuration(800);
-        fadeOut.setFillAfter(true);
-        AlphaAnimation fadeIn = new AlphaAnimation(0.2f,1f);
-        fadeIn.setDuration(800);
-        fadeIn.setFillAfter(true);
+        /* Get components */
+        ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
+        ImageView image = (ImageView) findViewById(R.id.imageView2);
 
+        /* Update view */
+        long now = System.currentTimeMillis();
+        if(now - latestPizzaChange > TIME_AFTER_PIZZA_CHANGE){
+            pw.setProgress(pw.progress + Double.valueOf(3.6 * percentToAdd).intValue());
+            if(pw.progress > 360){
+                // progressWheel full
+                hideProgressWheel();
+                showRandomImage();
+            } else {
+                if(!isProgressWheelVisible){
+                    showProgressWheel();
+                }
+            }
+            latestProgressWheelUpdate = now;
+        }
+    }
+
+   private void showProgressWheel(){
+        /*Get components*/
+       ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
+       ImageView image = (ImageView) findViewById(R.id.imageView2);
+
+       AlphaAnimation fadeOutView = new AlphaAnimation(1f,0.2f);
+       fadeOutView.setDuration(800);
+       fadeOutView.setFillAfter(true);
+
+       pw.setVisibility(View.VISIBLE);
+       image.startAnimation(fadeOutView);
+       isProgressWheelVisible = true;
+   }
+
+    private void hideProgressWheel(){
         /*Get components*/
         ProgressWheel pw = (ProgressWheel) findViewById(R.id.pw_spinner);
         ImageView image = (ImageView) findViewById(R.id.imageView2);
 
-        pw.setProgress(pw.progress + Double.valueOf(3.6*percentToAdd).intValue());
-        if(pw.progress > 360){
-            pw.setProgress(0);
-            pw.setVisibility(View.INVISIBLE);
+        AlphaAnimation fadeInView = new AlphaAnimation(0.2f,1f);
+        fadeInView.setDuration(800);
+        fadeInView.setFillAfter(true);
+        image.startAnimation(fadeInView);
 
-            image.startAnimation(fadeIn);
-            showRandomImage();
-            isViewfaded = true;
-        }else {
-            pw.setVisibility(View.VISIBLE);
-        }
-
-
-        if(!isViewfaded){
-            image.startAnimation(fadeOut);
-            isViewfaded = true;
-        }
-
-
+        pw.setProgress(0);
+        pw.setVisibility(View.INVISIBLE);
+        isProgressWheelVisible = false;
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        updateProgressWheel(1);
-
+        updateProgressWheel(2);
         return true;
     }
 
-    private void TimerMethod()
-    {
-        //This method is called directly by the timer
-        //and runs in the same thread as the timer.
-
-        //We call the method that will work with the UI
-        //through the runOnUiThread method.
+    private void TimerMethod() {
         this.runOnUiThread(Timer_Tick);
     }
 
 
     private Runnable Timer_Tick = new Runnable() {
         public void run() {
-            //This method runs in the same thread as the UI.
-            //Do something to the UI thread here
             Log.d(TAG,"tick");
+            long now = System.currentTimeMillis();
+            if(isProgressWheelVisible && (now - latestProgressWheelUpdate > TIME_BEFORE_PROGRESSWHEEL_RESET)){
+                //reset and hide progress wheel
+                hideProgressWheel();
+            }
         }
     };
 }
