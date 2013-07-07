@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import static android.view.Gravity.CENTER;
@@ -33,6 +35,7 @@ public class MainActivity extends Activity implements View.OnTouchListener{
     private SensorManager mSensorManager;
     private ShakeEventListener mSensorListener;
     private boolean isViewfaded = false;
+    private Timer myTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,16 @@ public class MainActivity extends Activity implements View.OnTouchListener{
         View view = findViewById(R.id.mainView);
         view.setOnTouchListener(this);
 
-        showRandomImage();
+        myTimer = new Timer();
+        myTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                TimerMethod();
+            }
+
+        }, 0, 1000);
+
+        showRandomImage(); // first
     }
 
     @Override
@@ -118,4 +130,24 @@ public class MainActivity extends Activity implements View.OnTouchListener{
         return true;
     }
 
+    private void TimerMethod()
+    {
+        //This method is called directly by the timer
+        //and runs in the same thread as the timer.
+
+        //We call the method that will work with the UI
+        //through the runOnUiThread method.
+        this.runOnUiThread(Timer_Tick);
+    }
+
+
+    private Runnable Timer_Tick = new Runnable() {
+        public void run() {
+
+            //This method runs in the same thread as the UI.
+
+            //Do something to the UI thread here
+
+        }
+    };
 }
